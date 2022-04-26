@@ -1,0 +1,50 @@
+﻿@model SV18T1021214.DomainModel.Shipper
+
+
+<div class="container">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <form class="form-horizontal" action="~/shipper/save" method="post">
+                <input type="hidden" name="ShipperID" value="@Model.ShipperID" />
+                <div class="box-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Tên người giao hàng:</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="ShipperName" name="ShipperName" value="@Model.ShipperName">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Số điện thoại</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="Phone" name="Phone" value="@Model.Phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">
+
+                                <i class="fa fa-save"></i>Lưu dữ liệu
+                            </button>
+                            <a href="~/shipper" class="btn btn-warning">
+                                <i class="fa fa-ban"></i> Quay lại
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </form>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+

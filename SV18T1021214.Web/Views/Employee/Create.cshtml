@@ -1,0 +1,73 @@
+﻿@model SV18T1021214.DomainModel.Employee
+@{
+    ViewBag.Title = "Create";
+}
+<div class="container">
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <form class="form-horizontal" action="~/employee/save" method="post">
+                <input type="hidden" name="EmployeeID" value="@Model.EmployeeID" />
+                <div class="box-body">
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Họ :</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="LastName" name="LastName" value="@Model.LastName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Tên :</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="FirstName" name="FirstName" value="@Model.FirstName">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Ngày Sinh:</label>
+                        <div class="col-sm-10">
+
+                            <input type="text" id="BirthDate" name="BirthDate" value="@Model.BirthDate">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Ảnh:</label>
+                        <div class="col-sm-10">
+                            <input type="text" width="170" height="170" class="form-control" id="Photo" name="Photo" value="@Model.Photo">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Ghi chú</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="Notes" name="Notes" value="@Model.Notes">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-sm-2" for="email">Email</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="Email" name="Email" value="@Model.Email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <button type="submit" class="btn btn-primary">
+
+                                <i class="fa fa-save"></i>Lưu dữ liệu
+                            </button>
+                            <a href="~/employee" class="btn btn-warning">
+                                <i class="fa fa-ban"></i> Quay lại
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+
+            </form>
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
