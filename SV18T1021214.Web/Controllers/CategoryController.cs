@@ -74,7 +74,21 @@ namespace SV18T1021214.Web.Controllers
         [HttpPost]
         public ActionResult Save(Category model)
         {
+
+            // Ta đang đưa các lỗi vào ModelState
             //TODO: Kiểm tra dữ liệu đầu vào
+            if (string.IsNullOrWhiteSpace(model.CategoryName))
+                ModelState.AddModelError("CategoryName", "Tên loại hàng không được để trống");
+
+            if (string.IsNullOrWhiteSpace(model.Description))
+                model.Description = "";
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Title = model.CategoryID == 0 ? "Bổ sung loại hàng" : "Thay đổi thông tin loại hàng";
+                return View("Create", model);
+            }
+            // Lưu dữ liệu
 
             if (model.CategoryID == 0)
             {

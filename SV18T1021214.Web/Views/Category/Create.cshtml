@@ -6,12 +6,15 @@
     <div class="box box-primary">
         <div class="box-header with-border">
             <form class="form-horizontal" action="~/category/save" method="post">
+                @Html.HiddenFor(m => m.CategoryID)
+
                 <input type="hidden" name="CategoryID" value="@Model.CategoryID" />
                 <div class="box-body">
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="email">Tên loại hàng:</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="CategoryName" name="CategoryName" value="@Model.CategoryName">
+                            @Html.TextBoxFor(m => m.CategoryName, new { @class = "form-control", @autofocus = "autofocus" })
+                            @Html.ValidationMessageFor(m => m.CategoryName, "", new { @style = "color:#f00" })
                         </div>
                     </div>
 
@@ -19,7 +22,7 @@
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="email">Thông tin loại hàng</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="Description" name="Description" value="@Model.Description">
+                            @Html.TextBoxFor(m => m.Description, new { @class = "form-control" })
                         </div>
                     </div>
 

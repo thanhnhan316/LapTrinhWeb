@@ -41,7 +41,7 @@ namespace SV18T1021214.Web.Controllers
         /// Bổ sung người giao hàng
         /// </summary>
         /// <returns></returns>
-        public ActionResult CreateShipper()
+        public ActionResult Create()
         {
             Shipper model = new Shipper()
             {
@@ -55,15 +55,15 @@ namespace SV18T1021214.Web.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [Route("editshipper/{shipperID}")]
-        public ActionResult EditShipper(int shipperID)
+        [Route("edit/{shipperID}")]
+        public ActionResult Edit(int shipperID)
         {
             Console.Write(shipperID);
             Shipper model = CommonDataService.GetShipper(shipperID);
             if (model == null)
                 return RedirectToAction("Index");
 
-            ViewBag.Title = "Thay đổi thông tin nguoi giao hang";
+            ViewBag.Title = "Thay đổi thông tin người giao hàng";
             return View("Create", model);
         }
         /// <summary>
@@ -74,7 +74,20 @@ namespace SV18T1021214.Web.Controllers
         [HttpPost]
         public ActionResult Save(Shipper model)
         {
+            // Ta đang đưa các lỗi vào ModelState
             //TODO: Kiểm tra dữ liệu đầu vào
+            if (string.IsNullOrWhiteSpace(model.ShipperName))
+                ModelState.AddModelError("ShipperName", "Tên người giao hàng không được để trống");
+            if (string.IsNullOrWhiteSpace(model.Phone))
+                ModelState.AddModelError("Phone", "Số điện thoại không được để trống");
+          
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Title = model.ShipperID == 0 ? "Bổ sung Người giao hàng" : "Thay đổi thông tin người giao hàng";
+                return View("Create", model);
+            }
+            // Lưu dữ liệu
 
             if (model.ShipperID == 0)
             {
@@ -93,8 +106,8 @@ namespace SV18T1021214.Web.Controllers
         /// </summary>
         /// <returns></returns>
         /// 
-        [Route("deleteshipper/{shipperID}")]
-        public ActionResult DeleteShipper(int shipperID)
+        [Route("delete/{shipperID}")]
+        public ActionResult Delete(int shipperID)
         {
             if (Request.HttpMethod == "POST")
             {
@@ -104,6 +117,7 @@ namespace SV18T1021214.Web.Controllers
             var model = CommonDataService.GetShipper(shipperID);
             if (model == null)
                 return RedirectToAction("Index");
+            ViewBag.Title = "Xóa người giao hàng ";
             return View(model);
         }
 

@@ -5795,12 +5795,8 @@
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\orderlookup\Index.cshtml" />
     <Content Include="Views\Customer\Create.cshtml" />
-    <Content Include="Views\Customer\Edit.cshtml" />
     <Content Include="Views\Customer\Delete.cshtml" />
     <Content Include="Views\Createoder\Index.cshtml" />
-    <Content Include="Views\Shipper\CreateShipper.cshtml" />
-    <Content Include="Views\Shipper\EditShipper.cshtml" />
-    <Content Include="Views\Shipper\DeleteShipper.cshtml" />
     <Content Include="Views\Supplier\Create.cshtml" />
     <Content Include="Views\Supplier\Delete.cshtml" />
     <Content Include="Views\Employee\Create.cshtml" />
@@ -5808,6 +5804,8 @@
     <Content Include="Views\Category\Create.cshtml" />
     <Content Include="Views\Category\Delete.cshtml" />
     <Content Include="Views\Customer\Create - Copy.cshtml" />
+    <Content Include="Views\Shipper\Create.cshtml" />
+    <Content Include="Views\Shipper\Delete.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

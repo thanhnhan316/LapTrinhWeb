@@ -77,7 +77,29 @@ namespace SV18T1021214.Web.Controllers
         [HttpPost]
         public ActionResult Save(Employee model)
         {
+            // Ta đang đưa các lỗi vào ModelState
             //TODO: Kiểm tra dữ liệu đầu vào
+            if (string.IsNullOrWhiteSpace(model.FirstName))
+                ModelState.AddModelError("FirstName", "Họ tên đệm không được để trống");
+            if (string.IsNullOrWhiteSpace(model.LastName))
+                ModelState.AddModelError("LastName", "Tên không được để trống");
+           /* if (string.IsNullOrWhiteSpace(model.BirthDate))
+                ModelState.AddModelError("Address", "Địa chỉ không được để trống");*/
+            if (string.IsNullOrWhiteSpace(model.Photo))
+                ModelState.AddModelError("Photo", "Ảnh không được để trống");
+            if (string.IsNullOrWhiteSpace(model.Email))
+                ModelState.AddModelError("Email", "Email không được để trống");
+          
+            if (string.IsNullOrWhiteSpace(model.Notes))
+                model.Notes = "";
+           
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Title = model.EmployeeID == 0 ? "Bổ sung nhân viên" : "Thay đổi thông tin nhân viên";
+                return View("Create", model);
+            }
+            // Lưu dữ liệu
 
             if (model.EmployeeID == 0)
             {
