@@ -40,6 +40,6 @@ namespace SV18T1021214.DomainModel
         /// </summary>
         public string Country { get; set; }
 
-
+       
     }
 }

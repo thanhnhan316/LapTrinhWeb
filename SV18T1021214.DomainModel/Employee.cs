@@ -8,7 +8,6 @@ namespace SV18T1021214.DomainModel
 {
      public class Employee
     {
-
         /// <summary>
         /// 
         /// </summary>

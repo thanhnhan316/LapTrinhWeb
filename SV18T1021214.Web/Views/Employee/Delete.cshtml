@@ -1,84 +1,71 @@
-﻿@model SV18T1021214.DomainModel.Employee
-@{
-    ViewBag.Title = "Delete ";
-}
+﻿
+@model SV18T1021214.DomainModel.Employee
 
-<div class="container">
-    <div class="box box-primary">
-        <div class="box-header with-border">
-            <form class="form-horizontal" action="~/employee/delete/@Model.EmployeeID" method="post">
-                <div class="box-body">
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Họ :</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-                            <p class="form-control-static">@Model.LastName </p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Tên:</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-                            <p class="form-control-static">@Model.FirstName</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Ngày sinh:</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-                            <p class="form-control-static">@Model.BirthDate</p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Ảnh</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-
-                            <img src="@Model.Photo" width="170" height="170">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Ghi chú:</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-                            <p class="form-control-static">
-                                @Model.Notes
-                            </p>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-sm-2" for="email">Email</label>
-                        <div class="col-sm-10" style="border-bottom:1px dotted #808080">
-                            <p class="form-control-static">@Model.Email</p>
-                        </div>
-                    </div>
-
-
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            @if (SV18T1021214.BusinessLayer.CommonDataService.InUsedEmployee(Model.EmployeeID))
-                            {
-                                <button type="submit" class="btn btn-warning">
-
-                                    <i class="fa fa-save"></i>Đồng ý xoá
-                                </button>
-
-                            }
-                            else
-                            {
-                                <p class="text-danger">không được xoá nhân viên này !</p>
-                            }
-
-                            <a href="~/customer" class="btn btn-yahoo">
-                                <i class="fa fa-ban"></i> Quay lại
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-
-
-            </form>
-        </div>
-
+<div class="box box-primary">
+    <div class="box-header with-border ">
     </div>
 
+    <div class="box-body">
+        <form class="form-horizontal" action="~/employee/delete/@Model.EmployeeID" method="post">
+            <div class="form-group">
+                <label class="control-label col-sm-2">Họ và tên:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.FirstName @Model.LastName</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">Ngày sinh:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.BirthDate</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">Email:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">@Model.Email</p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">Ghi chú:</label>
+                <div class="col-sm-10">
+                    <p class="form-control-static">
+                        @Model.Notes
+                    </p>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-2">Ảnh cá nhân:</label>
+                <div class="col-sm-10">
+                    <img src="~/Images/Employees/@Model.Photo" class="img img-bordered" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    @if (SV18T1021214.BusinessLayer.CommonDataService.InUsedProduct(Model.EmployeeID))
+                    {
+                        <p class="text-danger">không được xoá giao hang này !</p>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-warning">
+
+                            <i class="fa fa-save"></i>Đồng ý xoá
+                        </button>
+                    }
+                    <a class="btn btn-warning" href="~/employee">
+                        <i class="fa fa-ban"></i> Bỏ qua
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="box-footer text-center">
+    </div>
 
 </div>
-
 

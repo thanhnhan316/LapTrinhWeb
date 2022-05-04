@@ -19,6 +19,8 @@ namespace SV18T1021214.BusinessLayer
         private static readonly ICommonDAL<Shipper> shipperDB;
         private static readonly ICommonDAL<Employee> employeeDB;
         private static readonly ICommonDAL<Country> countryDB;
+        private static readonly ICommonDAL<Product> productDB;
+
 
 
         /// <summary>
@@ -38,6 +40,7 @@ namespace SV18T1021214.BusinessLayer
                     shipperDB = new DataLayer.SQLServer.ShipperDAL(connectionString);
                     employeeDB = new DataLayer.SQLServer.EmployeeDAL(connectionString);
                     countryDB = new DataLayer.SQLServer.CountryDAL(connectionString);
+                    productDB = new DataLayer.SQLServer.ProductDAL(connectionString);
 
                     break;
 
@@ -375,6 +378,68 @@ namespace SV18T1021214.BusinessLayer
         public static bool InUsedEmployee(int employeeID)
         {
             return employeeDB.InUsed(employeeID);
+        }
+
+
+
+        /// <summary>
+        /// lay danh sach mặt hàng
+        /// </summary>
+        /// <returns></returns>
+        public static List<Product> Product_List(int page, int pageSize, string searchValue, out int rowCout)
+        {
+            rowCout = productDB.Count(searchValue);
+
+            return productDB.List(page, pageSize, searchValue).ToList();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static int AddProduct(Product data)
+        {
+            return productDB.Add(data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool UpdateProduct(Product data)
+        {
+            return productDB.Update(data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool DeleteProduct(int productID)
+        {
+            if (productDB.InUsed(productID))
+                return false;
+            return productDB.Delete(productID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categoryID"></param>
+        /// <returns></returns>
+        public static Product GetProduct(int productID)
+        {
+            return productDB.Get(productID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categoryID"></param>
+        /// <returns></returns>
+        public static bool InUsedProduct(int productID)
+        {
+            return productDB.InUsed(productID);
         }
 
 

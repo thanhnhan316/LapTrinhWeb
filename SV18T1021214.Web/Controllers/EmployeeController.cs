@@ -2,9 +2,13 @@
 using SV18T1021214.DomainModel;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Mvc;
+
+
 
 namespace SV18T1021214.Web.Controllers
 {
@@ -49,6 +53,7 @@ namespace SV18T1021214.Web.Controllers
             {
                 EmployeeID = 0
             };
+
             ViewBag.Title = "Bổ sung nhân viên ";
             return View(model);
         }
@@ -75,31 +80,45 @@ namespace SV18T1021214.Web.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult Save(Employee model)
+        public ActionResult Save(Employee model,string dayOfBirth, HttpPostedFileBase uploadPhoto)
         {
-            // Ta đang đưa các lỗi vào ModelState
-            //TODO: Kiểm tra dữ liệu đầu vào
+            // Kiem tra du lieu dau vao
             if (string.IsNullOrWhiteSpace(model.FirstName))
-                ModelState.AddModelError("FirstName", "Họ tên đệm không được để trống");
+                ModelState.AddModelError("FirstName", "Ho không được để trống");
             if (string.IsNullOrWhiteSpace(model.LastName))
                 ModelState.AddModelError("LastName", "Tên không được để trống");
-           /* if (string.IsNullOrWhiteSpace(model.BirthDate))
-                ModelState.AddModelError("Address", "Địa chỉ không được để trống");*/
-            if (string.IsNullOrWhiteSpace(model.Photo))
-                ModelState.AddModelError("Photo", "Ảnh không được để trống");
             if (string.IsNullOrWhiteSpace(model.Email))
                 ModelState.AddModelError("Email", "Email không được để trống");
-          
             if (string.IsNullOrWhiteSpace(model.Notes))
                 model.Notes = "";
            
+            //Chuyển chuỗi ngày có kiểu DMY sang giá trị ngày để lưu vào model.BirthDate
+            try
+            {
+                model.BirthDate = DateTime.ParseExact(dayOfBirth, "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture);
+            }
+            catch
+            {
+                ModelState.AddModelError("BirthDate", "Ngày sinh "+ dayOfBirth+ " không hợp lệ (Phải có dạng ngày/tháng/năm)");
+                dayOfBirth = "";
+            }
 
             if (!ModelState.IsValid)
             {
-                ViewBag.Title = model.EmployeeID == 0 ? "Bổ sung nhân viên" : "Thay đổi thông tin nhân viên";
+                ViewBag.Title = model.EmployeeID == 0 ? "Bổ sung nhân viên" : "Cập nhật nhân viên";
                 return View("Create", model);
             }
-            // Lưu dữ liệu
+
+
+            //upload anh
+            if(uploadPhoto != null)
+            {
+                string path = Server.MapPath("~/Images/Employees");
+                string fileName = $"{DateTime.Now.Ticks}-{uploadPhoto.FileName}";
+                string filePath = System.IO.Path.Combine(path, fileName);
+                uploadPhoto.SaveAs(filePath);
+                model.Photo = fileName;
+            }
 
             if (model.EmployeeID == 0)
             {
@@ -113,6 +132,7 @@ namespace SV18T1021214.Web.Controllers
             }
 
         }
+       
 
         /// <summary>
         /// Xoá nhân viên
@@ -130,7 +150,11 @@ namespace SV18T1021214.Web.Controllers
             var model = CommonDataService.GetEmployee(employeeID);
             if (model == null)
                 return RedirectToAction("Index");
+            ViewBag.title = "Xóa nhân viên";
             return View(model);
         }
+
+       
     }
+  
 }
