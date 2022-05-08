@@ -21,26 +21,49 @@ namespace SV18T1021214.Web.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index(int page = 1, string searchValue = "", int categoryID = 0, int supplierID = 0)
+        public ActionResult Index()
         {
-            int pageSize = 10;
-            int rowCount = 0;
-            var data = CommonDataService.Product_List(page, pageSize, searchValue, out rowCount, categoryID, supplierID);
+            Models.PaginationSearchInput model = Session["PRODUCT_SEARCH"] as Models.PaginationSearchInput;
 
-            Models.ProductPaginationResult model = new Models.ProductPaginationResult()
+            if (model == null)
             {
-                
-                supplierID = supplierID,
-                categoryID = categoryID,
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
-                RowCount = rowCount,
-                Data = data
-            };
+                string search = Session["PRODUCT_SEARCH"] as string;
+                model = new Models.PaginationSearchInput()
+                {
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = search != null ? search : ""
+                };
 
+            }
             return View(model);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
+            int rowCount = 0;
+            int categoryID = 0;
+            int supplierID = 0;
+            var data = CommonDataService.Product_List(input.Page, input.PageSize, input.SearchValue, out rowCount,categoryID,supplierID);
+            Models.ProductPaginationResult model = new Models.ProductPaginationResult()
+            {
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
+                RowCount = rowCount,
+                Data = data,
+                categoryID = categoryID,
+                supplierID = supplierID
+            };
+            Session["PRODUCT_SEARCH"] = input;
+            return View(model);
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -118,6 +141,7 @@ namespace SV18T1021214.Web.Controllers
             {
                 if (uploadPhoto == null) model.Photo = "";
                 CommonDataService.AddProduct(model);
+                Session["PRODUCT_SEARCH"] = model.ProductName;
             }
             else
             {   // delete img if update photo

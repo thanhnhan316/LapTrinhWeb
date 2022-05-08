@@ -28,9 +28,10 @@ namespace SV18T1021214.Web.Controllers
         public ActionResult Index()
         {
             Models.PaginationSearchInput model = Session["CUSTOMER_SEARCH"] as Models.PaginationSearchInput;
-            string search = Session["CustomerName_SEARCH"] as string;
+           
             if (model == null)
-            {  
+            {
+                string search = Session["CUSTOMER_SEARCH"] as string;
                 model = new Models.PaginationSearchInput() { 
                     Page = 1,
                     PageSize = 10,
@@ -118,7 +119,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.CustomerID == 0)
             {
                 CommonDataService.AddCustomer(model);
-                Session["CustomerName_SEARCH"] = model.CustomerName;
+                Session["CUSTOMER_SEARCH"] = model.CustomerName;
                 return RedirectToAction("Index");
             }
             else

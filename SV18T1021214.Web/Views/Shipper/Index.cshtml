@@ -1,11 +1,13 @@
-﻿@model SV18T1021214.Web.Models.ShipperPaginationResult
+﻿@model  SV18T1021214.Web.Models.PaginationSearchInput
+
 @{
     ViewBag.Title = "Người giao hàng";
 }
 
 <!-- search form -->
-<form action="#" method="get">
+<form  id="searchInput" action="~/shipper/search">
     <div class="input-group">
+        @Html.HiddenFor(m => m.PageSize)
         <input type="text" name="searchValue" class="form-control" placeholder="Search..." autofocus value="@Model.SearchValue">
         <span class="input-group-btn">
             <button type="submit" name="searchValue" id="search-btn" class="btn btn-flat btn-primary">
@@ -15,51 +17,21 @@
         </span>
     </div>
 </form>
-<p>có tổng cộng <b>@Model.RowCount</b> người giao hàng trong <b>@Model.PageCount</b> trang</p>
-<div class="table-responsive" style="margin-top:10px">
-    <table class="table table-bordered table-hover table-striped">
-        <thead class="btn-primary">
-            <tr>
-                <th>Tên người giao hàng</th>
-                <th>Số điện thoại</th>
 
-                <th style="width:70px"></th>
-            </tr>
-        </thead>
-        
-        @foreach (var item in Model.Data)
-        {
-            <tbody>
-            <td>@item.ShipperName</td>
-            <td>@item.Phone</td>
+<div id="searchResult">
 
+</div>
 
-            <td>
-                <a href="~/shipper/edit/@item.ShipperID" class="btn btn-xs btn-success">
-                    <i class="fa fa-edit"></i>
-                </a>
-                <a href="~/shipper/delete/@item.ShipperID" class="btn btn-xs btn-danger">
-                    <i class="fa fa-remove"></i>
-                </a>
-            </td>
-            </tbody>
-        }
-    </table>
-    <div style="text-align: center">
-        <ul class="pagination">
-            @for (int i = 1; i <= Model.PageCount; i++)
-            {
-                if (i == Model.Page)
-                {
-                    <li class="active"><a>@i</a></li>
-                }
-                else
-                {
-                    <li><a href="~/shipper?page=@i&searchValue=@Model.SearchValue">@i</a></li>
-                }
-
-            }
-        </ul>
-
-    </div>
-
+@section scripts {
+    <script src="~/Scripts/search.js"></script>
+    <script>
+        $(document).ready(function () {
+            doSearch(@Model.Page);
+            $("#searchInput").submit(function (e) {
+                e.preventDefault();
+                doSearch(1);
+                return false;
+            });
+        } );
+    </script>
+}

@@ -26,20 +26,38 @@ namespace SV18T1021214.Web.Controllers
         // GET: Employee
         public ActionResult Index(int page = 1, string searchValue = "")
         {
-            ViewBag.Title = "Nhân viên";
-            int pageSize = 5;
+            Models.PaginationSearchInput model = Session["EMPLOYEE_SEARCH"] as Models.PaginationSearchInput;
+            string search = Session["EmployeeName_SEARCH"] as string;
+            if (model == null)
+            {
+                model = new Models.PaginationSearchInput()
+                {
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = search != null ? search : ""
+                };
+
+            }
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
             int rowCount = 0;
-            var data = CommonDataService.Employee_List(page, pageSize, searchValue, out rowCount);
+            var data = CommonDataService.Employee_List(input.Page, input.PageSize, input.SearchValue, out rowCount);
             Models.EmployeePaginationResult model = new Models.EmployeePaginationResult()
             {
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
                 RowCount = rowCount,
-                Data = data,
-
+                Data = data
             };
-
+            Session["EMPLOYEE_SEARCH"] = input;
             return View(model);
         }
 
@@ -123,6 +141,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.EmployeeID == 0)
             {
                 CommonDataService.AddEmployee(model);
+                Session["EmployeeName_SEARCH"] = model.FirstName;
                 return RedirectToAction("Index");
             }
             else

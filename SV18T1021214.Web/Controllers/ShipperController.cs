@@ -23,18 +23,38 @@ namespace SV18T1021214.Web.Controllers
 
         public ActionResult Index(int page = 1, string searchValue = "")
         {
-            int pageSize = 10;
+            Models.PaginationSearchInput model = Session["SHIPPER_SEARCH"] as Models.PaginationSearchInput;
+            string search = Session["ShipperName_SEARCH"] as string;
+            if (model == null)
+            {
+                model = new Models.PaginationSearchInput()
+                {
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = search != null ? search : ""
+                };
+
+            }
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
             int rowCount = 0;
-            var data = CommonDataService.Shipper_List(page, pageSize, searchValue, out rowCount);
+            var data = CommonDataService.Shipper_List(input.Page, input.PageSize, input.SearchValue, out rowCount);
             Models.ShipperPaginationResult model = new Models.ShipperPaginationResult()
             {
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
                 RowCount = rowCount,
                 Data = data
             };
-
+            Session["SHIPPER_SEARCH"] = input;
             return View(model);
         }
         /// <summary>
@@ -92,6 +112,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.ShipperID == 0)
             {
                 CommonDataService.AddShipper(model);
+                Session["ShipperName_SEARCH"] = model.ShipperName;
                 return RedirectToAction("Index");
             }
             else

@@ -5817,6 +5817,10 @@
     <Content Include="Views\Product\Photo.cshtml" />
     <Content Include="Views\Customer\Search.cshtml" />
     <Content Include="Views\Supplier\Search.cshtml" />
+    <Content Include="Views\Shipper\Search.cshtml" />
+    <Content Include="Views\Employee\Search.cshtml" />
+    <Content Include="Views\Category\Search.cshtml" />
+    <Content Include="Views\Product\Search.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

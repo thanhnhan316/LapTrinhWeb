@@ -21,20 +21,35 @@ namespace SV18T1021214.Web.Controllers
         /// <returns></returns>
        public ActionResult Index(int page = 1, string searchValue = "")
         {
-            ViewBag.Title = "Loại hàng";
-            int pageSize = 5;
+            Models.PaginationSearchInput model = Session["CATEGOTY_SEARCH"] as Models.PaginationSearchInput;
+        
+            if (model == null)
+            {
+                string search = Session["CATEGOTY_SEARCH"] as string;
+                model = new Models.PaginationSearchInput()
+                {
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = search != "" ? search : ""
+                };
+
+            }
+            return View(model);
+        }
+
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
             int rowCount = 0;
-            var data = CommonDataService.Category_List(page, pageSize, searchValue, out rowCount);
+            var data = CommonDataService.Category_List(input.Page, input.PageSize, input.SearchValue, out rowCount);
             Models.CategoryPaginationResult model = new Models.CategoryPaginationResult()
             {
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
                 RowCount = rowCount,
-                Data = data,
-
+                Data = data
             };
-
+            Session["CATEGOTY_SEARCH"] = input;
             return View(model);
         }
 
@@ -93,6 +108,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.CategoryID == 0)
             {
                 CommonDataService.AddCategory(model);
+                Session["CATEGOTY_SEARCH"] = model.CategoryName;
                 return RedirectToAction("Index");
             }
             else
