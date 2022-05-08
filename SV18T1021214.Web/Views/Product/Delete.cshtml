@@ -1,5 +1,7 @@
-﻿
-@model SV18T1021214.DomainModel.Product
+﻿@model SV18T1021214.DomainModel.Product
+@{
+    ViewBag.Title = "Xóa mặt hàng";
+}
 
 <div class="box box-primary">
     <div class="box-header with-border ">
@@ -37,9 +39,16 @@
 
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fa fa-trash"></i> Đồng ý xóa
-                    </button>
+                    @if (SV18T1021214.BusinessLayer.CommonDataService.InUsedProduct(Model.ProductID))
+                    {
+                        <p class="btn btn-danger">Không thể xóa mặt hàng này !!!!</p>
+                    }
+                    else
+                    {
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-remove"></i> Đồng ý xóa
+                        </button>
+                    }
                     <a class="btn btn-warning" href="~/product">
                         <i class="fa fa-ban"></i> Quay lại
                     </a>
@@ -51,5 +60,4 @@
     </div>
 
 </div>
-
 

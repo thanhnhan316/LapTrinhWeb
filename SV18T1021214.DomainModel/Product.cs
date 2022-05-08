@@ -15,9 +15,6 @@ namespace SV18T1021214.DomainModel
         /// 
         /// </summary>
         public int ProductID { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
         public string ProductName { get; set; }
         /// <summary>
         /// 

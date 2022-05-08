@@ -16,7 +16,8 @@ namespace SV18T1021214.Web.Models
         /// 
         /// </summary>
         public List<Product> Data { get; set; }
-
+        public int categoryID { get; set; }
+        public int supplierID { get; set; }
 
     }
 }

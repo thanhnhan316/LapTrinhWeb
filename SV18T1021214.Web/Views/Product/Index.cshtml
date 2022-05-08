@@ -1,4 +1,4 @@
-﻿@model  SV18T1021214.Web.Models.ProductPaginationResult
+﻿@model SV18T1021214.Web.Models.ProductPaginationResult
 @{
     ViewBag.Title = "Mặt hàng";
 }
@@ -10,23 +10,17 @@
         <form action="#" method="get">
             <div class="row">
                 <div class="col-sm-3">
-                    <select class="form-control" name="category">
-                        <option>-- Loại hàng --</option>
-                        <option>Mỹ phẩm</option>
-                        <option>Thực phẩm</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.categoryID, SelectListHelper.Categories(), new { @class = "form-control"})
                 </div>
                 <div class="col-sm-3">
-                    <select class="form-control" name="category">
-                        <option>-- Nhà cung cấp --</option>
-                        <option>Công ty TNHH Thành Công</option>
-                        <option>Vina Foods</option>
-                    </select>
+                    @Html.DropDownListFor(m => m.supplierID, SelectListHelper.Suppliers(), new { @class = "form-control" })
                 </div>
                 <div class="col-sm-6 input-group">
-                    <input type="text" name="searchValue" class="form-control" placeholder="Nhập tên hoặc giá tìm kiếm" autofocus value="@Model.SearchValue">
+                    <input type="text" name="searchValue" value="@Model.SearchValue"
+                           class="form-control"
+                           placeholder="Nhập tên mặt hàng cần tìm">
                     <span class="input-group-btn">
-                        <button type="submit" name="search" id="search-btn" class="btn btn-flat btn-info">
+                        <button type="submit" class="btn btn-flat btn-info">
                             <i class="fa fa-search"></i>
                         </button>
                         <a href="~/product/create"
@@ -39,7 +33,9 @@
             </div>
         </form>
 
-        <p>có tổng cộng <b>@Model.RowCount</b> mặt hàng trong <b>@Model.PageCount</b> trang</p>
+        <p style="margin:10px 0 10px 0">
+            Có <strong>@Model.RowCount</strong> mặt hàng trong tổng số <strong>@Model.PageCount</strong> trang
+        </p>
 
         <div class="table-responsive">
             <table class="table table-bordered table-hover table-striped">
@@ -52,49 +48,46 @@
                         <th style="width:75px">&nbsp;</th>
                     </tr>
                 </thead>
-                
+                <tbody>
                     @foreach (var item in Model.Data)
                     {
-                    <tbody>
                         <tr>
                             <td>
-                                <img src="~/images/Products/@item.Photo" style="width:80px" />
+                                <img src="~/Images/Products/@item.Photo" style="width:80px" />
                             </td>
                             <td style="vertical-align:middle">@item.ProductName</td>
                             <td style="vertical-align:middle">@item.Unit</td>
                             <td style="vertical-align:middle">@item.Price</td>
                             <td class="text-right" style="vertical-align:middle">
-                                <a href="~/product/edit/@item.ProductID" class="btn btn-xs btn-success">
+                                <a href="~/product/edit/@item.ProductID" class="btn btn-xs btn-flat btn-info">
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <a href="~/product/delete/@item.ProductID" class="btn btn-xs btn-danger">
+                                <a href="~/product/delete/@item.ProductID" class="btn btn-xs btn-flat btn-danger">
                                     <i class="fa fa-remove"></i>
                                 </a>
                             </td>
                         </tr>
-                      
-                    
-                    </tbody>}                 
-                </table>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <div style="text-align: center">
+    <div class="text-center">
         <ul class="pagination">
-            @for (int i = 1; i <= @Model.PageCount; i++)
+            @for (int i = 1; i <= Model.PageCount; i++)
             {
-                if (i == @Model.Page)
+                if (i == Model.Page)
                 {
-                    <li class="active"><a>@i</a></li>
+                    <li class="active"><a href="#">@i</a></li>
                 }
                 else
                 {
-                    <li><a href="~/product?page=@i&searchValue=@Model.SearchValue">@i</a></li>
+                    <li><a href="~/product?page=@i&category=@Model.categoryID&supplier=@Model.supplierID&searchValue=@Model.SearchValue">@i</a></li>
                 }
-
             }
         </ul>
-
     </div>
+
 </div>
 

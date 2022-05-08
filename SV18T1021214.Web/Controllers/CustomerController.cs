@@ -21,28 +21,45 @@ namespace SV18T1021214.Web.Controllers
         /// <returns></returns>
         ///
         /// <summary>
-        /// Tin=mf kiếm và hiển thị danh sách
+        /// giao diện tìm kiếm
         /// </summary>
         /// <returns></returns>
         // GET: Customer
-        public ActionResult Index(int page = 1, string searchValue = "")
+        public ActionResult Index()
         {
-            int pageSize = 10;
+            Models.PaginationSearchInput model = Session["CUSTOMER_SEARCH"] as Models.PaginationSearchInput;
+            string search = Session["CustomerName_SEARCH"] as string;
+            if (model == null)
+            {  
+                model = new Models.PaginationSearchInput() { 
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = search != null ? search :""
+                };
+
+            }
+            return View(model);
+        }
+
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
             int rowCount = 0;
-            var data = CommonDataService.Customer_List(page, pageSize, searchValue, out rowCount);
+            var data = CommonDataService.Customer_List(input.Page, input.PageSize, input.SearchValue, out rowCount);
             Models.CustomerPaginationResult model = new Models.CustomerPaginationResult()
             {
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
                 RowCount = rowCount,
                 Data = data
             };
-
+            Session["CUSTOMER_SEARCH"] = input;
             return View(model);
         }
+
         /// <summary>
         /// Giao dien bo sung
+        /// Tim kiếm và hiển thị danh sách
         /// </summary>
         /// <returns></returns>
         public ActionResult Create()
@@ -101,6 +118,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.CustomerID == 0)
             {
                 CommonDataService.AddCustomer(model);
+                Session["CustomerName_SEARCH"] = model.CustomerName;
                 return RedirectToAction("Index");
             }
             else

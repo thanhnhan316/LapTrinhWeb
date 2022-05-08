@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -20,13 +21,17 @@ namespace SV18T1021214.Web.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        public ActionResult Index(int page = 1, string searchValue = "")
+        public ActionResult Index(int page = 1, string searchValue = "", int categoryID = 0, int supplierID = 0)
         {
             int pageSize = 10;
             int rowCount = 0;
-            var data = CommonDataService.Product_List(page, pageSize, searchValue, out rowCount);
+            var data = CommonDataService.Product_List(page, pageSize, searchValue, out rowCount, categoryID, supplierID);
+
             Models.ProductPaginationResult model = new Models.ProductPaginationResult()
             {
+                
+                supplierID = supplierID,
+                categoryID = categoryID,
                 Page = page,
                 PageSize = pageSize,
                 SearchValue = searchValue,
@@ -44,10 +49,9 @@ namespace SV18T1021214.Web.Controllers
         {
             Product model = new Product()
             {
-                ProductID = 0
+                ProductID = 0,
             };
-
-            ViewBag.Title = "Bổ sung mặt hàng ";
+            ViewBag.Title = "Bổ sung mặt hàng";
             return View(model);
         }
         /// <summary>
@@ -59,11 +63,73 @@ namespace SV18T1021214.Web.Controllers
         public ActionResult Edit(int productID)
         {
             Product model = CommonDataService.GetProduct(productID);
+            ViewBag.Title = "Cập nhật thông tin mặt hàng";
             if (model == null)
                 return RedirectToAction("Index");
-
-            ViewBag.Title = "Thay đổi thông tin mặt hàng";
-            return View("Create", model);
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult Save(Product model, HttpPostedFileBase uploadPhoto)
+        {
+            // check valid input
+            if (string.IsNullOrWhiteSpace(model.ProductName))
+                ModelState.AddModelError("ProductName", "Tên mặt hàng không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.Unit))
+                ModelState.AddModelError("Unit", "Đơn vị mặt hàng hàng không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.Price))
+                ModelState.AddModelError("Price", "Giá mặt hàng không được để trống.");
+            else
+            {
+                string[] subs = (model.Price).Split('.');
+                if (subs.Length > 2) ModelState.AddModelError("Price", "Giá mặc hàng không hợp lệ. Vd: 50, 45.5, 199.55");
+                else foreach (var sub in subs)
+                    {
+                        var isNumeric = int.TryParse(sub, out _);
+                        if (!isNumeric)
+                        {
+                            ModelState.AddModelError("Price", "Giá mặc hàng không hợp lệ. Vd: 50, 45.5, 199.55");
+                            break;
+                        }
+                    }
+            }
+            if (model.CategoryID == 0)
+                ModelState.AddModelError("CategoryID", "Vui lòng chọn loại hàng.");
+            if (model.SupplierID == 0)
+                ModelState.AddModelError("SupplierID", "Vui lòng chọn nhà cung cấp.");
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Title = model.ProductID == 0 ? "Cập nhật thông tin mặt hàng" : "Bổ sung mặt hàng";
+                return View(model.ProductID == 0 ? "Create" : "Edit", model);
+            }
+            // upload file picture
+            if (uploadPhoto != null)
+            {
+                string _FileName = DateTime.Now.Ticks + "-" + Path.GetFileName(uploadPhoto.FileName);
+                string _path = Path.Combine(Server.MapPath("~/Images/Products"), _FileName);
+                uploadPhoto.SaveAs(_path);
+                model.Photo = _FileName;
+            }
+            if (model.ProductID == 0)
+            {
+                if (uploadPhoto == null) model.Photo = "";
+                CommonDataService.AddProduct(model);
+            }
+            else
+            {   // delete img if update photo
+                if (uploadPhoto != null)
+                {
+                    string fullPath = Server.MapPath("~/Images/Products/" + CommonDataService.GetProduct(model.ProductID).Photo);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                }
+                CommonDataService.UpdateProduct(model);
+            }
+            return RedirectToAction("Index");
         }
         /// <summary>
         /// 
@@ -73,15 +139,28 @@ namespace SV18T1021214.Web.Controllers
         [Route("delete/{productID}")]
         public ActionResult Delete(int productID)
         {
+            var model = CommonDataService.GetProduct(productID);
             if (Request.HttpMethod == "POST")
             {
+                // delete image product
+                if (string.IsNullOrWhiteSpace(model.Photo))
+                {
+                    string fullPath = Server.MapPath("~/Images/Products/" + model.Photo);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                }
+                // delete image product photo
+                foreach (var p in CommonDataService.ListOfProductPhotos(productID))
+                {
+                    string fullPath = Server.MapPath("~/Images/ProductPhotos/" + p.Photo);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                }
                 CommonDataService.DeleteProduct(productID);
                 return RedirectToAction("Index");
             }
-            var model = CommonDataService.GetProduct(productID);
             if (model == null)
                 return RedirectToAction("Index");
-            ViewBag.title = "Xóa mặt hàng";
             return View(model);
         }
         /// <summary>
@@ -91,66 +170,84 @@ namespace SV18T1021214.Web.Controllers
         /// <param name="productID"></param>
         /// <param name="photoID"></param>
         /// <returns></returns>
-
-        [HttpPost]
-        public ActionResult Save(Product model, HttpPostedFileBase uploadPhoto)
-        {
-            // Kiem tra du lieu dau vao
-            if (string.IsNullOrWhiteSpace(model.ProductName))
-                ModelState.AddModelError("ProductName", "Tên mặt hàng không được để trống");
-            if (string.IsNullOrWhiteSpace(model.Unit))
-                ModelState.AddModelError("Unit", "Đơn vị tính không được để trống");
-            if (string.IsNullOrWhiteSpace(model.Price))
-                ModelState.AddModelError("Price", "Giá bán không được để trống");
-
-
-
-            if (!ModelState.IsValid)
-            {
-                ViewBag.Title = model.ProductID == 0 ? "Bổ sung mặt hàng" : "Cập nhật mặt hàng";
-                return View("Create", model);
-            }
-
-
-            //upload anh
-            if (uploadPhoto != null)
-            {
-                string path = Server.MapPath("~/Images/Products");
-                string fileName = $"{DateTime.Now.Ticks}-{uploadPhoto.FileName}";
-                string filePath = System.IO.Path.Combine(path, fileName);
-                uploadPhoto.SaveAs(filePath);
-                model.Photo = fileName;
-            }
-
-            if (model.ProductID == 0)
-            {
-                CommonDataService.AddProduct(model);
-                return RedirectToAction("Index");
-            }
-            else
-            {
-                CommonDataService.UpdateProduct(model);
-                return RedirectToAction("Index");
-            }
-
-        }
         [Route("photo/{method}/{productID}/{photoID?}")]
         public ActionResult Photo(string method, int productID, int? photoID)
         {
+            ProductPhoto model = new ProductPhoto();
             switch (method)
             {
                 case "add":
+                    model.PhotoID = 0;
                     ViewBag.Title = "Bổ sung ảnh";
                     break;
                 case "edit":
+                    model = CommonDataService.GetProductPhoto(photoID.Value);
+                    if (model == null)
+                        return RedirectToAction("Edit", new { productID = productID });
                     ViewBag.Title = "Thay đổi ảnh";
                     break;
                 case "delete":
+                    var mode = CommonDataService.GetProductPhoto(photoID.Value);
+                    string fullPath = Server.MapPath("~/Images/ProductPhotos/" + mode.Photo);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                    CommonDataService.DeleteProductPhoto(photoID.Value);
                     return RedirectToAction("Edit", new { productID = productID });
                 default:
                     return RedirectToAction("Index");
             }
-            return View();
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="uploadPhoto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SavePhoto(ProductPhoto model, HttpPostedFileBase uploadPhoto)
+        {
+            if (string.IsNullOrWhiteSpace(model.Description))
+                ModelState.AddModelError("Description", "Mô tả/ tiêu đề không được để trống.");
+            if (model.DisplayOrder < 0)
+                ModelState.AddModelError("DisplayOrder", "Thứ tự không bé hơn 0.");
+            else
+            {
+                foreach (var item in CommonDataService.ListOfProductPhotos(model.ProductID))
+                {
+                    if (item.DisplayOrder == model.DisplayOrder && item.PhotoID != model.PhotoID)
+                    {
+                        ModelState.AddModelError("DisplayOrder", "Thứ tự hiển thị đã tồn tại.");
+                        break;
+                    }
+                }
+            }
+            // upload file picture
+            if (uploadPhoto != null)
+            {
+                string _FileName = DateTime.Now.Ticks + "-" + Path.GetFileName(uploadPhoto.FileName);
+                string _path = Path.Combine(Server.MapPath("~/Images/ProductPhotos"), _FileName);
+                uploadPhoto.SaveAs(_path);
+                model.Photo = _FileName;
+            }
+            else if (model.PhotoID == 0) ModelState.AddModelError("Photo", "Ảnh không được để trống.");
+
+            if (!ModelState.IsValid)
+                return View("Photo", model);
+
+            if (model.PhotoID == 0)
+                CommonDataService.AddProductPhoto(model);
+            else
+            {
+                if (uploadPhoto != null)
+                {
+                    string fullPath = Server.MapPath("~/Images/ProductPhotos/" + CommonDataService.GetProductPhoto(model.PhotoID).Photo);
+                    if (System.IO.File.Exists(fullPath))
+                        System.IO.File.Delete(fullPath);
+                }
+                CommonDataService.UpdateProductPhoto(model);
+            }
+            return RedirectToAction("Edit", new { productID = model.ProductID });
         }
         /// <summary>
         /// 
@@ -162,20 +259,61 @@ namespace SV18T1021214.Web.Controllers
         [Route("attribute/{method}/{productID}/{attributeID?}")]
         public ActionResult Attribute(string method, int productID, int? attributeID)
         {
+            ProductAttribute model = new ProductAttribute();
             switch (method)
             {
                 case "add":
+                    model.AttributeID = 0;
                     ViewBag.Title = "Bổ sung thuộc tính";
                     break;
                 case "edit":
+                    model = CommonDataService.GetProductAttribute(attributeID.Value);
+                    if (model == null)
+                        return RedirectToAction("Edit", new { productID = productID });
                     ViewBag.Title = "Thay đổi thuộc tính";
                     break;
                 case "delete":
+                    CommonDataService.DeleteProductAttribute(attributeID.Value);
                     return RedirectToAction("Edit", new { productID = productID });
                 default:
                     return RedirectToAction("Index");
             }
-            return View();
+            return View(model);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="uploadPhoto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult SaveAttribute(ProductAttribute model, HttpPostedFileBase uploadPhoto)
+        {
+            if (string.IsNullOrWhiteSpace(model.AttributeName))
+                ModelState.AddModelError("AttributeName", "Tên thuộc tính không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.AttributeValue))
+                ModelState.AddModelError("AttributeValue", "Giá trị thuộc tính không được để trống.");
+            if (model.DisplayOrder < 0)
+                ModelState.AddModelError("DisplayOrder", "Thứ tự không bé hơn 0.");
+            else
+            {
+                foreach (var item in CommonDataService.ListOfProductAttributes(model.ProductID))
+                {
+                    if (item.DisplayOrder == model.DisplayOrder && item.AttributeID != model.AttributeID)
+                    {
+                        ModelState.AddModelError("DisplayOrder", "Thứ tự hiển thị đã tồn tại.");
+                        break;
+                    }
+                }
+            }
+            if (!ModelState.IsValid)
+                return View("Attribute", model);
+            if (model.AttributeID == 0)
+                CommonDataService.AddProductAttribute(model);
+            else
+                CommonDataService.UpdateProductAttribute(model);
+            return RedirectToAction("Edit", new { productID = model.ProductID });
         }
     }
+
 }

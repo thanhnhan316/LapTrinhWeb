@@ -19,7 +19,9 @@ namespace SV18T1021214.BusinessLayer
         private static readonly ICommonDAL<Shipper> shipperDB;
         private static readonly ICommonDAL<Employee> employeeDB;
         private static readonly ICommonDAL<Country> countryDB;
-        private static readonly ICommonDAL<Product> productDB;
+        private static readonly IProductDAL productDB;
+        private static readonly IPhotoAttributeDAL<ProductPhoto> productPhotoDB;
+        private static readonly IPhotoAttributeDAL<ProductAttribute> productAttributeDB;
 
 
 
@@ -41,6 +43,8 @@ namespace SV18T1021214.BusinessLayer
                     employeeDB = new DataLayer.SQLServer.EmployeeDAL(connectionString);
                     countryDB = new DataLayer.SQLServer.CountryDAL(connectionString);
                     productDB = new DataLayer.SQLServer.ProductDAL(connectionString);
+                    productPhotoDB = new DataLayer.SQLServer.ProductPhotoDAL(connectionString);
+                    productAttributeDB = new DataLayer.SQLServer.ProductAttributeDAL(connectionString);
 
                     break;
 
@@ -50,6 +54,7 @@ namespace SV18T1021214.BusinessLayer
 
             }
         }
+    
 
         /// <summary>
         /// lay danh sach mac hang
@@ -187,6 +192,8 @@ namespace SV18T1021214.BusinessLayer
         {
             return customerDB.InUsed(customerID);
         }
+
+
         /// <summary>
         /// 
         /// </summary>
@@ -383,16 +390,42 @@ namespace SV18T1021214.BusinessLayer
 
 
         /// <summary>
-        /// lay danh sach mặt hàng
+        /// Tìm kiếm lấy danh sách mặt hàng dưới dạng phân trang trang
         /// </summary>
-        /// <returns></returns>
-        public static List<Product> Product_List(int page, int pageSize, string searchValue, out int rowCout)
+        /// <param name="page"> vị trí trang</param>
+        /// <param name="pageSize"> số phần tử trong 1 trang</param>
+        /// <param name="searchValue"> chuỗi cần tìm kiếm </param>
+        /// <param name="rowCount"> số phần tử tìm kiếm được </param>
+        /// <returns>Danh sách khách hàng tìm kiếm được</returns>
+        public static List<Product> ListOfProducts()
         {
-            rowCout = productDB.Count(searchValue);
-
-            return productDB.List(page, pageSize, searchValue).ToList();
+            return productDB.List().ToList();
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="searchValue"></param>
+        /// <param name="rowCount"></param>
+        /// <param name="categoryID"></param>
+        /// <param name="supplierID"></param>
+        /// <returns></returns>
+        public static List<Product> Product_List(int page, int pageSize, string searchValue, out int rowCount, int categoryID, int supplierID)
+        {
+            rowCount = productDB.Count(searchValue, categoryID, supplierID);
+            return productDB.List(searchValue, pageSize, page, categoryID, supplierID).ToList();
+            // return productDB.List(searchValue, pageSize, page).ToList();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        public static Product GetProduct(int productID)
+        {
+            return productDB.Get(productID);
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -411,35 +444,115 @@ namespace SV18T1021214.BusinessLayer
         {
             return productDB.Update(data);
         }
-
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="data"></param>
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        public static bool InUsedProduct(int productID)
+        {
+            return productDB.InUsed(productID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productID"></param>
         /// <returns></returns>
         public static bool DeleteProduct(int productID)
         {
-            if (productDB.InUsed(productID))
+            if (InUsedProduct(productID))
                 return false;
             return productDB.Delete(productID);
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="categoryID"></param>
+        /// <param name="productID"></param>
         /// <returns></returns>
-        public static Product GetProduct(int productID)
+        public static List<ProductPhoto> ListOfProductPhotos(int productID)
         {
-            return productDB.Get(productID);
+            return productPhotoDB.List(productID).ToList();
         }
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="categoryID"></param>
+        /// <param name="photoID"></param>
         /// <returns></returns>
-        public static bool InUsedProduct(int productID)
+        public static ProductPhoto GetProductPhoto(int photoID)
         {
-            return productDB.InUsed(productID);
+            return productPhotoDB.Get(photoID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static int AddProductPhoto(ProductPhoto data)
+        {
+            return productPhotoDB.Add(data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool UpdateProductPhoto(ProductPhoto data)
+        {
+            return productPhotoDB.Update(data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="photoID"></param>
+        /// <returns></returns>
+        public static bool DeleteProductPhoto(int photoID)
+        {
+            return productPhotoDB.Delete(photoID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productID"></param>
+        /// <returns></returns>
+        public static List<ProductAttribute> ListOfProductAttributes(int productID)
+        {
+            return productAttributeDB.List(productID).ToList();
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="attributeID"></param>
+        /// <returns></returns>
+        public static ProductAttribute GetProductAttribute(int attributeID)
+        {
+            return productAttributeDB.Get(attributeID);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static int AddProductAttribute(ProductAttribute data)
+        {
+            return productAttributeDB.Add(data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static bool UpdateProductAttribute(ProductAttribute data)
+        {
+            return productAttributeDB.Update(data);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool DeleteProductAttribute(int id)
+        {
+            return productAttributeDB.Delete(id);
         }
 
 

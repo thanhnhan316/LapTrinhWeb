@@ -1,46 +1,60 @@
-﻿
-@{
-    ViewBag.Title = "Cập nhật mặt hàng";
-}
-
+﻿@model SV18T1021214.DomainModel.Product
 <div class="box box-primary">
     <div class="box-header with-border ">
-        <h3 class="box-title">Thông tin mặt hàng</h3>
     </div>
 
     <div class="box-body">
-        <form class="form-horizontal" action="#" method="post">
+        <form class="form-horizontal" action="~/product/Save" method="post" enctype="multipart/form-data">
+            @Html.HiddenFor(m => m.ProductID)
             <div class="form-group">
                 <label class="control-label col-sm-2">Tên mặt hàng:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="ProductName" autofocus>
+                    @Html.TextBoxFor(m => m.ProductName, new { @class = "form-control", @autofocus = "autofocus" })
+                    @Html.ValidationMessageFor(m => m.ProductName, "", new { @style = "color:red;font-style:italic;" })
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="control-label col-sm-2">Đơn vị tính:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="Unit" autofocus>
+                    @Html.TextBoxFor(m => m.Unit, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Unit, "", new { @style = "color:red;font-style:italic;" })
                 </div>
             </div>
-
+            <div class="form-group">
+                <label class="control-label col-sm-2">Loai Hang:</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.CategoryID, SelectListHelper.Categories(), new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.CategoryID, "", new { @style = "color:red;font-style:italic;" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-2">Nha cung cap:</label>
+                <div class="col-sm-10">
+                    @Html.DropDownListFor(m => m.SupplierID, SelectListHelper.Suppliers(), new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.SupplierID, "", new { @style = "color:red;font-style:italic;" })
+                </div>
+            </div>
             <div class="form-group">
                 <label class="control-label col-sm-2">Giá hàng:</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" name="Price">
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(m => m.Price, "", new { @style = "color:red;font-style:italic;" })
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="control-label col-sm-2">Ảnh minh họa:</label>
                 <div class="col-sm-10">
-                    <input type="file" class="form-control" name="Photo" />
+                    @Html.HiddenFor(m => m.Photo)
+                    <input type="file" class="form-control" name="uploadPhoto" accept="image/*"
+                           onchange="document.getElementById('Photo2').src = window.URL.createObjectURL(this.files[0])" />
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="col-lg-offset-2 col-sm-10">
-                    <img src="~/Images/Products/samsung_NP900X4C.png" class="img img-bordered" style="width:150px" />
+                    <img id="Photo2" src="~/Images/Products/@Model.Photo" class="img img-bordered" style="width:200px" />
                 </div>
             </div>
 
@@ -58,7 +72,11 @@
     </div>
     <div class="box-footer text-center">
     </div>
+
 </div>
+
+
+
 
 <div class="box box-info">
     <div class="box-header with-border ">
@@ -78,29 +96,29 @@
                     <th>Thứ tự hiển thị</th>
                     <th>Ẩn ảnh</th>
                     <th class="text-right">
-                        <a class="btn btn-xs btn-primary" href="~/product/photo/add/111">
+                        <a class="btn btn-xs btn-primary" href="~/product/photo/add/@Model.ProductID">
                             <i class="fa fa-plus"></i>
                         </a>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 1; i <= 3; i++)
+                @foreach (var x in SV18T1021214.BusinessLayer.CommonDataService.ListOfProductPhotos(Model.ProductID))
                 {
                     <tr>
                         <td style="vertical-align:middle">
-                            <img src="~/Images/Products/Samsung_1.jpg" alt="" style="width:100px" />
+                            <img src="~/Images/ProductPhotos/@x.Photo" alt="" style="width:100px" />
                         </td>
                         <td style="vertical-align:middle;">
-                            LAPTOP SAMSUNG SERIES 9 NP900X4C i5 3337U 8GB SSD 128GB
+                            @x.Description
                         </td>
-                        <td style="vertical-align:middle;">@i</td>
-                        <td style="vertical-align:middle;"></td>
+                        <td style="vertical-align:middle;">@x.DisplayOrder</td>
+                        <td style="vertical-align:middle;">@x.IsHidden</td>
                         <td style="vertical-align:middle; text-align:right">
-                            <a class="btn btn-xs btn-primary" href="~/product/photo/edit/111/222">
+                            <a class="btn btn-xs btn-primary" href="~/product/photo/edit/@x.ProductID/@x.PhotoID">
                                 <i class="fa fa-edit"></i>
                             </a>
-                            <a class="btn btn-xs btn-danger" href="~/product/photo/delete/111/222">
+                            <a class="btn btn-xs btn-danger" href="~/product/photo/delete/@x.ProductID/@x.PhotoID">
                                 <i class="fa fa-trash-o"></i>
                             </a>
                         </td>
@@ -132,39 +150,31 @@
                     <th>Giá trị thuộc tính</th>
                     <th>Thứ tự hiển thị</th>
                     <th class="text-right">
-                        <a class="btn btn-xs btn-primary" href="~/product/attribute/add/111">
+                        <a class="btn btn-xs btn-primary" href="~/product/attribute/add/@Model.ProductID">
                             <i class="fa fa-plus"></i>
                         </a>
                     </th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td style="vertical-align:middle">CPU</td>
-                    <td style="vertical-align:middle;">Intel Core i5 3337U 1.8GHz</td>
-                    <td style="vertical-align:middle;">1</td>
-                    <td style="vertical-align:middle; text-align:right">
-                        <a class="btn btn-xs btn-primary" href="~/product/attribute/edit/111/222">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <a class="btn btn-xs btn-danger" href="~/product/attribute/delete/111/222">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="vertical-align:middle">DISPLAY</td>
-                    <td style="vertical-align:middle;">15.6" Led 1600*900</td>
-                    <td style="vertical-align:middle;">2</td>
-                    <td style="vertical-align:middle; text-align:right">
-                        <a class="btn btn-xs btn-primary" href="~/product/edit-attribute/123">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <a class="btn btn-xs btn-danger" href="~/product/delete-attribute/123">
-                            <i class="fa fa-trash-o"></i>
-                        </a>
-                    </td>
-                </tr>
+                @foreach (var c in SV18T1021214.BusinessLayer.CommonDataService.ListOfProductAttributes(Model.ProductID))
+                {
+                    <tr>
+                        <td style="vertical-align:middle">@c.AttributeName</td>
+                        <td style="vertical-align:middle;">@c.AttributeValue</td>
+                        <td style="vertical-align:middle;">@c.DisplayOrder</td>
+                        <td style="vertical-align:middle; text-align:right">
+                            <a class="btn btn-xs btn-primary" href="~/product/attribute/edit/@c.ProductID/@c.AttributeID">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                            <a class="btn btn-xs btn-danger" href="~/product/attribute/delete/@c.ProductID/@c.AttributeID">
+                                <i class="fa fa-trash-o"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+
+
             </tbody>
         </table>
     </div>

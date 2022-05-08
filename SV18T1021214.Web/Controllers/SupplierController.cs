@@ -22,34 +22,35 @@ namespace SV18T1021214.Web.Controllers
         /// <returns></returns>
         /// 
 
-        public ActionResult Index(int page = 1, string searchValue = "")
+        public ActionResult Index()
         {
-            int pageSize = 10;
-            int rowCount = 0;
-            var data = CommonDataService.Supplier_List(page, pageSize, searchValue, out rowCount);
+            Models.PaginationSearchInput model = Session["SUPPLIER_SEARCH"] as Models.PaginationSearchInput;
+            if (model == null)
+            {
+                model = new Models.PaginationSearchInput()
+                {
+                    Page = 1,
+                    PageSize = 10,
+                    SearchValue = ""
+                };
 
+            }
+            return View(model);
+        }
+        public ActionResult Search(Models.PaginationSearchInput input)
+        {
+            int rowCount = 0;
+            var data = CommonDataService.Supplier_List(input.Page, input.PageSize, input.SearchValue, out rowCount);
             Models.ShupplierPaginationResult model = new Models.ShupplierPaginationResult()
             {
-                Page = page,
-                PageSize = pageSize,
-                SearchValue = searchValue,
+                Page = input.Page,
+                PageSize = input.PageSize,
+                SearchValue = input.SearchValue,
                 RowCount = rowCount,
                 Data = data
             };
-
+            Session["SUPPLIER_SEARCH"] = input;
             return View(model);
-
-            //int pageSize = 10;
-            //int rowCount = 0;
-            //var model = CommonDataService.Supplier_List(page, pageSize, searchValue, out rowCount);
-            //int pageCount = rowCount / pageSize;
-            //if (rowCount % pageSize > 0)
-            //    pageCount += 1;
-            //ViewBag.pageCount = pageCount;
-            //ViewBag.rowCount = rowCount;
-            //ViewBag.searchValue = searchValue;
-            //ViewBag.CurrentPage = page;
-            //return View(model);
         }
         /// <summary>
         /// Bổ sung nhà cung cấp.

@@ -1,11 +1,12 @@
-﻿@model  SV18T1021214.Web.Models.CustomerPaginationResult
+﻿@model  SV18T1021214.Web.Models.PaginationSearchInput
 @{
     ViewBag.Title = "Khách hàng";
 }
 
 <!-- search form -->
-<form action="~/customer" method="get">
+<form id="searchInput" action="~/customer/search">
     <div class="input-group">
+        @Html.HiddenFor(m => m.PageSize)
         <input type="text" name="searchValue" class="form-control" placeholder="Nhập tên hoặc địa chỉ tìm kiếm" autofocus value="@Model.SearchValue">
         <span class="input-group-btn">
             <button type="submit" name="searchValue" id="search-btn" class="btn btn-flat btn-primary">
@@ -15,61 +16,21 @@
         </span>
     </div>
 </form>
-<p>có tổng cộng <b>@Model.RowCount</b> khách hàng trong <b>@Model.PageCount</b> trang</p>
 
-<div class="table-responsive"  style="margin-top:10px">
-    <table class="table table-bordered table-hover table-striped">
-        <thead class="btn-primary">
-            <tr>
-                <th>Tên khách hàng</th>
-                <th>Tên giao dịch</th>
-                <th>Địa chỉ</th>
-                <th>Quấc gia</th>
-                <th>Thành phố</th>
-                <th>Mã bưu chính</th>
-                <th style="width:70px"></th>
-            </tr>
-        </thead>
-
-        @foreach (var item in Model.Data)
-        {
-            <tbody>
-            <td>@item.CustomerName</td>
-            <td>@item.ContactName</td>
-            <td>@item.Address</td>
-            <td>@item.Country</td>
-            <td>@item.City</td>
-            <td>@item.PostalCode</td>
-            <td>
-               <a href="~/customer/edit/@item.CustomerID" class="btn btn-xs btn-success">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                        <a href="~/customer/delete/@item.CustomerID" class="btn btn-xs btn-danger">
-                            <i class="fa fa-remove"></i>
-                        </a>
-            </td>
-            </tbody>
-        }
-
-
-
-
-    </table>
-</div>
-<div style="text-align: center">
-    <ul class="pagination">
-        @for (int i = 1; i <= @Model.PageCount; i++)
-        {
-            if (i == @Model.Page)
-            {
-                <li class="active"><a>@i</a></li>
-            }
-            else
-            {
-                <li><a href="~/customer?page=@i&searchValue=@Model.SearchValue">@i</a></li>
-            }
-
-        }
-    </ul>
+<div id="searchResult">
 
 </div>
+
+@section scripts {
+    <script src="~/Scripts/search.js" ></script>
+    <script>
+        $(document).ready(function () {
+            doSearch(@Model.Page);
+            $("#searchInput").submit(function (e) {
+                e.preventDefault();
+                doSearch(1);
+                return false;
+            });
+        } );
+    </script>
+}
