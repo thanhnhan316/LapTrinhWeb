@@ -27,11 +27,12 @@ namespace SV18T1021214.Web.Controllers
             Models.PaginationSearchInput model = Session["SUPPLIER_SEARCH"] as Models.PaginationSearchInput;
             if (model == null)
             {
+                string search = Session["SUPPLIER_SEARCH"] as string;
                 model = new Models.PaginationSearchInput()
                 {
                     Page = 1,
                     PageSize = 10,
-                    SearchValue = ""
+                    SearchValue = search!=null ? search: ""
                 };
 
             }
@@ -117,6 +118,8 @@ namespace SV18T1021214.Web.Controllers
             if (model.SupplierID == 0)
             {
                 CommonDataService.AddSupplier(model);
+                Session["SUPPLIER_SEARCH"] = model.SupplierName;
+
                 return RedirectToAction("Index");
             }
             else

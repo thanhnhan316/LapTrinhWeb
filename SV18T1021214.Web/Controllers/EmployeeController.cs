@@ -27,9 +27,10 @@ namespace SV18T1021214.Web.Controllers
         public ActionResult Index(int page = 1, string searchValue = "")
         {
             Models.PaginationSearchInput model = Session["EMPLOYEE_SEARCH"] as Models.PaginationSearchInput;
-            string search = Session["EmployeeName_SEARCH"] as string;
+            
             if (model == null)
             {
+                string search = Session["EMPLOYEE_SEARCH"] as string;
                 model = new Models.PaginationSearchInput()
                 {
                     Page = 1,
@@ -141,7 +142,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.EmployeeID == 0)
             {
                 CommonDataService.AddEmployee(model);
-                Session["EmployeeName_SEARCH"] = model.FirstName;
+                Session["EMPLOYEE_SEARCH"] = model.FirstName;
                 return RedirectToAction("Index");
             }
             else

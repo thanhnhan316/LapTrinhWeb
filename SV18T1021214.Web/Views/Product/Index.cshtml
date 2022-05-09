@@ -1,4 +1,4 @@
-﻿@model  SV18T1021214.Web.Models.PaginationSearchInput
+﻿@model  SV18T1021214.Web.Models.ProductPaginationSearchInput
 
 @{
     ViewBag.Title = "Mặt hàng";
@@ -10,32 +10,16 @@
     <div class="box-body">
         <form id="searchInput" action="~/product/search">
             <div class="row">
+                @Html.HiddenFor(m => m.PageSize)
                 <div class="col-sm-3">
-                    <select class="form-control">
-                        @foreach (var item in SelectListHelper.Categories())
-                        {
-                            <option value="@item.Value">@item.Text</option>
-
-                        }
-                    </select>
+                    @Html.DropDownListFor(m => m.CategoryID, SelectListHelper.Categories(), new { @class = "form-control" })
                 </div>
                 <div class="col-sm-3">
-                    <select class="form-control">
-                        @foreach (var item in SelectListHelper.Suppliers())
-                        {
-                            <option value="@item.Value">@item.Text</option>
-
-                        }
-                    </select>
-                </div>
-                @*<div class="col-sm-3">
-            @Html.DropDownListFor(m => m.categoryID, SelectListHelper.Categories(), new { @class = "form-control" })
-        </div>
-        <div class="col-sm-3">
-            @Html.DropDownListFor(m => m.supplierID, SelectListHelper.Suppliers(), new { @class = "form-control" })
-        </div>*@
+                    @Html.DropDownListFor(m => m.SupplierID, SelectListHelper.Suppliers(), new { @class = "form-control" })
+                </div>       
+              
                 <div class="input-group">
-                    @Html.HiddenFor(m => m.PageSize)
+
                     <input type="text" name="searchValue" value="@Model.SearchValue"
                            class="form-control"
                            placeholder="Nhập tên mặt hàng cần tìm">

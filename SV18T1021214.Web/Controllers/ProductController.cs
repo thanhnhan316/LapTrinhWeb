@@ -23,16 +23,18 @@ namespace SV18T1021214.Web.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
-            Models.PaginationSearchInput model = Session["PRODUCT_SEARCH"] as Models.PaginationSearchInput;
+            Models.ProductPaginationSearchInput model = Session["PRODUCT_SEARCH"] as Models.ProductPaginationSearchInput;
 
             if (model == null)
             {
                 string search = Session["PRODUCT_SEARCH"] as string;
-                model = new Models.PaginationSearchInput()
+                model = new Models.ProductPaginationSearchInput()
                 {
                     Page = 1,
                     PageSize = 10,
-                    SearchValue = search != null ? search : ""
+                    SearchValue = search != null ? search :"",
+                    CategoryID = 0,
+                    SupplierID = 0
                 };
 
             }
@@ -44,12 +46,11 @@ namespace SV18T1021214.Web.Controllers
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
-        public ActionResult Search(Models.PaginationSearchInput input)
+        public ActionResult Search(Models.ProductPaginationSearchInput input)
         {
             int rowCount = 0;
-            int categoryID = 0;
-            int supplierID = 0;
-            var data = CommonDataService.Product_List(input.Page, input.PageSize, input.SearchValue, out rowCount,categoryID,supplierID);
+       
+            var data = CommonDataService.Product_List(input.Page, input.PageSize, input.SearchValue, out rowCount,input.CategoryID,input.SupplierID);
             Models.ProductPaginationResult model = new Models.ProductPaginationResult()
             {
                 Page = input.Page,
@@ -57,8 +58,8 @@ namespace SV18T1021214.Web.Controllers
                 SearchValue = input.SearchValue,
                 RowCount = rowCount,
                 Data = data,
-                categoryID = categoryID,
-                supplierID = supplierID
+                categoryID = input.CategoryID,
+                supplierID = input.SupplierID
             };
             Session["PRODUCT_SEARCH"] = input;
             return View(model);
@@ -145,12 +146,12 @@ namespace SV18T1021214.Web.Controllers
             }
             else
             {   // delete img if update photo
-                if (uploadPhoto != null)
+             /*   if (uploadPhoto != null)
                 {
                     string fullPath = Server.MapPath("~/Images/Products/" + CommonDataService.GetProduct(model.ProductID).Photo);
                     if (System.IO.File.Exists(fullPath))
                         System.IO.File.Delete(fullPath);
-                }
+                }*/
                 CommonDataService.UpdateProduct(model);
             }
             return RedirectToAction("Index");

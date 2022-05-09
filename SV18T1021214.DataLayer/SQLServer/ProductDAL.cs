@@ -58,9 +58,8 @@ namespace SV18T1021214.DataLayer.SQLServer
         public int Count(string searchValue, int category, int supplier)
         {
             int count = 0;
-            if (searchValue != null)
+            if (searchValue != "")
                 searchValue = "%" + searchValue + "%";
-
             using (SqlConnection conn = OpenConnection())
             {
                 SqlCommand cmd = new SqlCommand();
@@ -215,8 +214,9 @@ namespace SV18T1021214.DataLayer.SQLServer
         public List<Product> List(string searchValue, int pageSize, int page, int categoryID, int supplierID)
         {
             List<Product> data = new List<Product>();
-            if (searchValue != null)
+            if (searchValue != "")
                 searchValue = "%" + searchValue + "%";
+           
             using (SqlConnection conn = OpenConnection())
             {
                 SqlCommand cmd = new SqlCommand();

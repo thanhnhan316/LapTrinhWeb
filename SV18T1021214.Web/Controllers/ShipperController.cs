@@ -24,9 +24,10 @@ namespace SV18T1021214.Web.Controllers
         public ActionResult Index(int page = 1, string searchValue = "")
         {
             Models.PaginationSearchInput model = Session["SHIPPER_SEARCH"] as Models.PaginationSearchInput;
-            string search = Session["ShipperName_SEARCH"] as string;
             if (model == null)
             {
+                string search = Session["SHIPPER_SEARCH"] as string;
+
                 model = new Models.PaginationSearchInput()
                 {
                     Page = 1,
@@ -112,7 +113,7 @@ namespace SV18T1021214.Web.Controllers
             if (model.ShipperID == 0)
             {
                 CommonDataService.AddShipper(model);
-                Session["ShipperName_SEARCH"] = model.ShipperName;
+                Session["SHIPPER_SEARCH"] = model.ShipperName;
                 return RedirectToAction("Index");
             }
             else
