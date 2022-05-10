@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 <!DOCTYPE html>
@@ -16,9 +15,9 @@
     <link rel="stylesheet" href="~/themes/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="~/themes/bower_components/Ionicons/css/ionicons.min.css">
-    <!-- Theme style -->        
+    <!-- Theme style -->
     <link rel="stylesheet" href="~/themes/dist/css/AdminLTE.min.css">
-    <!-- iCheck -->              
+    <!-- iCheck -->
     <link rel="stylesheet" href="~/themes/plugins/iCheck/square/blue.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -33,7 +32,7 @@
 <body class="hold-transition login-page">
     <div class="login-box">
         <div class="login-logo">
-            <a href="../../index2.html"><b>Admin</b>LTE</a>
+            <a href="../../index2.html"><b>My </b>Shop</a>
         </div>
         <!-- /.login-logo -->
         <div class="login-box-body">
@@ -41,36 +40,29 @@
 
             <form action="~/account/login" method="post">
                 <div class="form-group has-feedback">
-                    <input name="username" type="email" class="form-control" placeholder="Email" value="@ViewBag.Username">
+                    <input name="email" type="email" class="form-control" placeholder="Email" value="@ViewBag.Email">
+                    @Html.ValidationMessage("email","",new { @style = "color:red"})
                     <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
                 </div>
                 <div class="form-group has-feedback">
-                    <input name="password" type="password" class="form-control" placeholder="Password">
+                    <input name="password" type="password" class="form-control" placeholder="Password" value="@ViewBag.Password">
+                    @Html.ValidationMessage("password", "", new { @style = "color:red" })
                     <span class="glyphicon glyphicon-lock form-control-feedback"></span>
                 </div>
                 <div class="row">
                     <div class="col-xs-8">
-                       @ViewBag.Message
+                        <p style="color:red"> @ViewBag.Massage</p>
+                      
                     </div>
                     <!-- /.col -->
                     <div class="col-xs-4">
-                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Đăng nhập</button>
                     </div>
                     <!-- /.col -->
                 </div>
             </form>
 
-            <div class="social-auth-links text-center">
-                <p>- OR -</p>
-                <a href="#" class="btn btn-block btn-social btn-facebook btn-flat">
-                    <i class="fa fa-facebook"></i> Sign in using
-                    Facebook
-                </a>
-                <a href="#" class="btn btn-block btn-social btn-google btn-flat">
-                    <i class="fa fa-google-plus"></i> Sign in using
-                    Google+
-                </a>
-            </div>
+           
             <!-- /.social-auth-links -->
 
             <a href="#">I forgot my password</a><br>
@@ -86,12 +78,13 @@
     <script src="~/themes/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <!-- iCheck -->
     <script src="../../plugins/iCheck/icheck.min.js"></script>
-    <script>$(function () {
-    $('input').iCheck({
-      checkboxClass: 'icheckbox_square-blue',
-      radioClass: 'iradio_square-blue',
-      increaseArea: '20%' /* optional */
-    });
-  });</script>
+    <script>
+    $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' /* optional */
+            });
+        });</script>
 </body>
 </html>

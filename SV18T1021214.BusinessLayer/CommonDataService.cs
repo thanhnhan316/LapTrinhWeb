@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SV18T1021214.DataLayer;
+using SV18T1021214.DataLayer.SQLServer;
 using SV18T1021214.DomainModel;
 
 namespace SV18T1021214.BusinessLayer
@@ -22,6 +23,8 @@ namespace SV18T1021214.BusinessLayer
         private static readonly IProductDAL productDB;
         private static readonly IPhotoAttributeDAL<ProductPhoto> productPhotoDB;
         private static readonly IPhotoAttributeDAL<ProductAttribute> productAttributeDB;
+        private static readonly AccountDAL accountDB;
+
 
 
 
@@ -45,6 +48,7 @@ namespace SV18T1021214.BusinessLayer
                     productDB = new DataLayer.SQLServer.ProductDAL(connectionString);
                     productPhotoDB = new DataLayer.SQLServer.ProductPhotoDAL(connectionString);
                     productAttributeDB = new DataLayer.SQLServer.ProductAttributeDAL(connectionString);
+                    accountDB = new DataLayer.SQLServer.AccountDAL(connectionString);
 
                     break;
 
@@ -54,7 +58,28 @@ namespace SV18T1021214.BusinessLayer
 
             }
         }
-    
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static int Login(string email,string password)
+        {
+            return accountDB.Login(email, password);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public static bool ChangePassword(string email, string password)
+        {
+            return accountDB.ChangePassword(email, password);
+        }
+
 
         /// <summary>
         /// lay danh sach mac hang
@@ -335,15 +360,17 @@ namespace SV18T1021214.BusinessLayer
             rowCout = employeeDB.Count(searchValue);
 
             return employeeDB.List(page, pageSize, searchValue).ToList();
+
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
 
-        public static int AddEmployee(Employee data)
+            /// <summary>
+            /// 
+            /// </summary>
+            /// <param name="data"></param>
+            /// <returns></returns>
+
+            public static int AddEmployee(Employee data)
         {
             return employeeDB.Add(data);
         }
